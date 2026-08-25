@@ -3,6 +3,6 @@ using Services.Api.DTOs;
 namespace Services.Api.Interfaces;
 public interface IRoomService
 {
-    RoomResponse CreatRoom(CreateRoomRequset request);
-    RoomResponse? GetRoom(Guid id);
+    Task<RoomResponse> CreatRoomAsync(CreateRoomRequest request);
+    Task<RoomResponse?> GetRoomAsync(Guid id);
 }

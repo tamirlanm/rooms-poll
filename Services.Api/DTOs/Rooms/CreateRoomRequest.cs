@@ -1,5 +1,5 @@
 namespace Services.Api.DTOs;
-public class CreateRoomRequset
+public class CreateRoomRequest
 {
     public string Name {get;set;} = string.Empty;
 }

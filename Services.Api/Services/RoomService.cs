@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using Microsoft.EntityFrameworkCore;
+using Services.Api.Data;
 using Services.Api.DTOs;
 using Services.Api.Interfaces;
 using Services.Api.Models;
@@ -7,8 +9,11 @@ namespace Services.Api.Services;
 
 public class RoomService : IRoomService
 {
-    private readonly ConcurrentDictionary<Guid, Room> _rooms = new();
-    public RoomResponse CreatRoom(CreateRoomRequset request)
+    // private readonly ConcurrentDictionary<Guid, Room> _rooms = new();
+    private readonly AppDbContext _dbContext;
+    public RoomService(AppDbContext dbContext) { _dbContext = dbContext;}
+
+    public async Task<RoomResponse> CreatRoomAsync(CreateRoomRequest request)
     {
         var room = new Room
         {
@@ -18,13 +23,17 @@ public class RoomService : IRoomService
             MemberCount = 0
         };
 
-        _rooms[room.Id] = room;
+        _dbContext.Add(room);
+        await _dbContext.SaveChangesAsync();
+
         return MapToResponse(room);
     }
 
-    public RoomResponse? GetRoom(Guid id)
+    public async Task<RoomResponse?> GetRoomAsync(Guid id)
     {
-        return _rooms.TryGetValue(id, out var room) ? MapToResponse(room) : null;
+        var room = await _dbContext.Rooms.AsNoTracking().FirstOrDefaultAsync(room => room.Id == id);
+
+        return room is null ? null : MapToResponse(room);
     }
 
     private static RoomResponse MapToResponse(Room room)

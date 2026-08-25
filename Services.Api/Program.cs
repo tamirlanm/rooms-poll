@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Services.Api.Data;
 using Services.Api.Interfaces;
 using Services.Api.Services;
 
@@ -9,7 +11,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IRoomService, RoomService>();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddScoped<IRoomService, RoomService>();
 
 var app = builder.Build();
 

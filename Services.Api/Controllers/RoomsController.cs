@@ -8,7 +8,6 @@ namespace Services.Api.Controllers;
 public class RoomsController : ControllerBase
 {
     private readonly IRoomService _roomService;
-
     
     public RoomsController(IRoomService roomService)
     {
@@ -16,25 +15,25 @@ public class RoomsController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<RoomResponse> CreateRoom(CreateRoomRequset request)
+    public async Task<ActionResult<RoomResponse>> CreateRoom(CreateRoomRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Name))
         {
             return BadRequest("Room name cannot be empty.");
         }
 
-        var room = _roomService.CreatRoom(request);
+        var room = await _roomService.CreatRoomAsync(request);
 
         return CreatedAtAction(
             nameof(GetRoom),
-            new {Id = room.Id},    
+            new {id = room.Id},    
             room);
     }
 
     [HttpGet("{id:guid}")]
-    public ActionResult<RoomResponse> GetRoom(Guid id)
+    public async Task<ActionResult<RoomResponse>> GetRoom(Guid id)
     {
-        var room = _roomService.GetRoom(id);
+        var room = await _roomService.GetRoomAsync(id);
 
         if(room is null)
         {
